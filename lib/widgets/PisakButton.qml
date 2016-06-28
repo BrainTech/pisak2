@@ -6,18 +6,45 @@ import "../style"
 import "../scanning"
 
 
+/*!
+    \qmltype PisakButton
+    \brief Pisak button base class.
+
+    Represents basic GUI element that can by styled easily.
+*/
 PisakScanningGroup {
     signal clicked()
 
     property alias text: __button.text
 
+    /*!
+        \qmlproperty string PisakButton::styleClass
+
+        Name of the object that can be used by a style sheet to define its style properties.
+
+        The default value is \c "button".
+    */
     property string styleClass: "button"
 
+    /*!
+        \qmlmethod void PisakButton::select()
+
+        Selects the button - emits the \c clicked signal.
+    */
     function select() {
         state = "active"
         clicked()
         unwind()
     }
+
+    /*!
+        \qmlproperty PisakScanningGroup PisakButton::parentScanningGroup
+
+        Group that the given button belongs to as one of its elements.
+
+        The default value is \c null.
+    */
+    property var parentScanningGroup: ({})
 
     Button {
         id: __button

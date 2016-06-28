@@ -1,5 +1,11 @@
 import QtQuick.Controls 1.4
 
 
+/*!
+    \qmltype PisakMainWindow
+    \brief Main window for Pisak.
+
+    Provides main window for a program with handling of menu, toolbar, statusbar etc
+*/
 ApplicationWindow {
 }

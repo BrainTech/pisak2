@@ -3,7 +3,7 @@ import "../media"
 
 /*!
     \qmltype PisakScanningGroup
-    \brief Single scanning group that can consist of multiple elements
+    \brief Single scanning group that can contain multiple elements
 
     Groups together elements that are somehow related to each other or have
     something in common (but not necessarily are placed next to each other in the graphical layout)
@@ -38,13 +38,52 @@ Item {
 
     on__StateChanged: { if (__state !== "active") { state = __state } }
 
+
+    /*!
+        \qmlproperty string PisakScanningGroup::soundName
+
+        Name of a sound effect that should represent the group and be played on demand.
+
+        The default value is \c "".
+    */
     property string soundName: ""
 
+    /*!
+        \qmlproperty var PisakScanningGroup::elements
+
+        List containing elements belonging to the group. Each element must be scannable.
+
+        The default value is the empty list.
+
+        \sa isScannable
+    */
     property var elements: []
+
+    /*!
+        \qmlproperty PisakScanningGroup PisakScanningGroup::parentScanningGroup
+
+        Group that the given group belongs to as one of its elements.
+
+        The default value is \c null.
+    */
     property var parentScanningGroup: ({})
 
+    /*!
+        \qmlproperty PisakScanningStrategy PisakScanningGroup::strategy
+
+        Strategy that manages the whole scanning cycle within the group.
+
+        The default value is \c PisakScanningStrategyBasic.
+    */
     property PisakScanningStrategy strategy: PisakScanningStrategyBasic { group: main }
 
+    /*!
+        \qmlproperty bool PisakScanningGroup::isScannable
+
+        Indicates whether the group can be scanned. This property is read-only.
+
+        The default value is \c true.
+    */
     readonly property bool isScannable: true
 
     readonly property bool running: strategy.running
@@ -62,6 +101,11 @@ Item {
         }
     }
 
+    /*!
+        \qmlmethod void PisakScanningSound::playSound()
+
+        Plays sound that has been assigned to the group.
+    */
     function playSound() {
         __sound.play()
     }

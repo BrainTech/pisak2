@@ -1,0 +1,22 @@
+#include(compat.qdocconf)
+
+project = PISAK
+description = Polish Integration System of Alternative Communication
+
+sourcedirs = ../lib
+headerdirs  = ../lib
+exampledirs = ..
+imagedirs = ../res
+
+sources.fileextensions = "*.cpp *.qdoc *.mm *.qml"
+headers.fileextensions = "*.h *.ch *.h++ *.hh *.hpp *.hxx"
+examples.fileextensions = "*.cpp *.h *.js *.xq *.svg *.xml *.ui *.qhp *.qhcp *.qml"
+examples.imageextensions = "*.png *.jpeg *.jpg *.gif *.mng"
+
+outputdir   = html
+outputformats = HTML
+
+outputprefixes = QML
+outputprefixes.QML = pisakcomponents-
+outputsuffixes = QML
+outputsuffixes.QML = -tp
