@@ -1,4 +1,5 @@
 import QtQuick 2.5
+import QtQuick.Layouts 1.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import ".."
@@ -13,6 +14,8 @@ import "../scanning"
     Represents basic GUI element that can by styled easily.
 */
 PisakScanningGroup {
+    visible: true
+
     signal clicked()
 
     property alias text: __button.text
@@ -37,30 +40,22 @@ PisakScanningGroup {
         unwind()
     }
 
-    /*!
-        \qmlproperty PisakScanningGroup PisakButton::parentScanningGroup
-
-        Group that the given button belongs to as one of its elements.
-
-        The default value is \c null.
-    */
-    property var parentScanningGroup: ({})
-
     Button {
         id: __button
+        anchors.fill: parent
 
         style: ButtonStyle {
             label: PisakLabel {
                 text: control.text
-                color: __styleSpec.foreground
-                font.family: __styleSpec.fontFamily
-                font.pixelSize: __styleSpec.fontPixelSize
+                color: control.__styleSpec.foreground
+                font.family: control.__styleSpec.fontFamily
+                font.pixelSize: control.__styleSpec.fontPixelSize
             }
             background: PisakRectangle {
-                color: __styleSpec.background
-                radius: __styleSpec.radius
-                border.color: __styleSpec.border
-                border.width: __styleSpec.borderWidth
+                color: control.__styleSpec.background
+                radius: control.__styleSpec.radius
+                border.color: control.__styleSpec.border
+                border.width: control.__styleSpec.borderWidth
             }
         }
 

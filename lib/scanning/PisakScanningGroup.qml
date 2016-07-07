@@ -11,6 +11,7 @@ import "../media"
 */
 Item {
     id: main
+    visible: false
 
     signal activeGroupChanged(var group)
 
@@ -34,10 +35,9 @@ Item {
         }
     ]
 
-    property string __state: parentScanningGroup.state
+    property string __state: ((parentScanningGroup !== null) ? parentScanningGroup.state : "normal") || "normal"
 
     on__StateChanged: { if (__state !== "active") { state = __state } }
-
 
     /*!
         \qmlproperty string PisakScanningGroup::soundName
@@ -57,7 +57,7 @@ Item {
 
         \sa isScannable
     */
-    property var elements: []
+    property var elements: new Array(0)
 
     /*!
         \qmlproperty PisakScanningGroup PisakScanningGroup::parentScanningGroup
@@ -66,7 +66,7 @@ Item {
 
         The default value is \c null.
     */
-    property var parentScanningGroup: ({})
+    property var parentScanningGroup: null
 
     /*!
         \qmlproperty PisakScanningStrategy PisakScanningGroup::strategy
@@ -94,10 +94,12 @@ Item {
     }
 
     onElementsChanged: {
-        for(var i = 0; i < elements.length; i++) {
-            if (!elements[i].isScannable) {
-                // elements.splice(i, 1)
-            } else { elements[i].parentScanningGroup = main }
+        if (elements != undefined) {
+            for(var i = 0; i < elements.length; i++) {
+                if (elements[i] == undefined || !elements[i].isScannable) {
+                    // elements.splice(i, 1)
+                } else { elements[i].parentScanningGroup = main }
+            }
         }
     }
 
@@ -120,10 +122,12 @@ Item {
     }
 
     function onInputEvent() {
-        var currentElement = strategy.getCurrentElement()
-        stopScanning()
-        activeGroupChanged(currentElement)
-        currentElement.select()
+        if (running) {
+            var currentElement = strategy.getCurrentElement()
+            stopScanning()
+            activeGroupChanged(currentElement)
+            currentElement.select()
+        } else { startScanning() }
     }
 
     function select() {
@@ -131,7 +135,7 @@ Item {
     }
 
     function unwind() {
-        if (parentScanningGroup) {
+        if (parentScanningGroup !== null) {
             activeGroupChanged(parentScanningGroup)
             parentScanningGroup.onSubgroupUnwind()
         }

@@ -11,7 +11,6 @@ PisakMainWindow {
     width: Screen.width
     height: Screen.height
     visible: true
-    visibility: "FullScreen"
 
     menuBar: PisakMenuBar {
         PisakMenu {
@@ -97,6 +96,8 @@ PisakMainWindow {
 
 
     RowLayout {
+        width: parent.width
+        height: parent.height
         spacing: 20
         RowLayout {
             ColumnLayout {
@@ -104,7 +105,9 @@ PisakMainWindow {
                 Repeater {
                     model: 5
                     PisakButton {
-                        text: qsTr("1_1_" + (index+1).toString())
+                        Layout.minimumHeight: 50
+                        Layout.minimumWidth: 150
+                        text: qsTr("1_1_" + (index+1))
                         onClicked: console.log(text)
                     }
                 }
@@ -114,7 +117,9 @@ PisakMainWindow {
                 Repeater {
                     model: 5
                     PisakButton {
-                        text: qsTr("1_2_" + (index+1).toString())
+                        Layout.minimumHeight: 50
+                        Layout.minimumWidth: 150
+                        text: qsTr("1_2_" + (index+1))
                         onClicked: console.log(text)
                     }
                 }
@@ -126,7 +131,9 @@ PisakMainWindow {
                 Repeater {
                     model: 5
                     PisakButton {
-                        text: qsTr("2_1_" + (index+1).toString())
+                        Layout.minimumHeight: 50
+                        Layout.minimumWidth: 150
+                        text: qsTr("2_1_" + (index+1))
                         onClicked: console.log(text)
                     }
                 }
@@ -136,7 +143,9 @@ PisakMainWindow {
                 Repeater {
                     model: 5
                     PisakButton {
-                        text: qsTr("2_2_" + (index+1).toString())
+                        Layout.minimumHeight: 50
+                        Layout.minimumWidth: 150
+                        text: qsTr("2_2_" + (index+1))
                         onClicked: console.log(text)
                     }
                 }
@@ -148,7 +157,9 @@ PisakMainWindow {
                 Repeater {
                     model: 5
                     PisakButton {
-                        text: qsTr("3_1_" + (index+1).toString())
+                        Layout.minimumHeight: 50
+                        Layout.minimumWidth: 150
+                        text: qsTr("3_1_" + (index+1))
                         onClicked: console.log(text)
                     }
                 }
@@ -158,7 +169,9 @@ PisakMainWindow {
                 Repeater {
                     model: 5
                     PisakButton {
-                        text: qsTr("3_2_" + (index+1).toString())
+                        Layout.minimumHeight: 50
+                        Layout.minimumWidth: 150
+                        text: qsTr("3_2_" + (index+1))
                         onClicked: console.log(text)
                     }
                 }
