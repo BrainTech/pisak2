@@ -22,9 +22,9 @@ QtObject {
         // TODO: load proper skin dynamically
         switch (pisak.settings.skin) {
             case "default":
+            default:
                 return DefaultSkin
             case "fancy":
-            default:
                 return FancySkin
         }
     }

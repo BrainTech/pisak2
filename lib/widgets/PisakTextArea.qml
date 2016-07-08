@@ -1,5 +1,6 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.4
+import "../style"
 
 
 /*!
@@ -9,15 +10,45 @@ import QtQuick.Controls 1.4
     Displays multi-line editable text.
 */
 TextArea {
+    id:main
+
     wrapMode: TextEdit.Wrap
+
+    property string styleClass: "textArea"
+
+    readonly property var __styleSpec: PisakStyle.skin[styleClass]
+
+    Rectangle {
+        x: main.cursorRectangle.x
+        y: main.cursorRectangle.y
+        width: main.cursorRectangle.width
+        height: main.cursorRectangle.height
+        color: parent.__styleSpec.cursorColor
+
+        OpacityAnimator on opacity{
+            loops: Animation.Infinite
+            from: 0
+            to: 1
+            duration: 500
+        }
+    }
+
+    onWidthChanged: __onResized()
+    onHeightChanged: __onResized()
+
+    function __onResized() {
+        if (cursorRectangle.y > (y + height)) {
+            flickableItem.contentY = cursorRectangle.y - height*0.8
+        }
+    }
 
     /*!
         \qmlmethod void PisakTextArea::typeText(string text)
 
-        Appends given text to the current text buffer.
+        Inserts given text to the current text buffer in the current cursor position.
     */
     function typeText(newText) {
-        insert(length, newText)
+        insert(cursorPosition, newText)
     }
 
     /*!
@@ -32,10 +63,10 @@ TextArea {
     /*!
         \qmlmethod void PisakTextArea::backspace()
 
-        Removes the last character.
+        Removes the last character starting with the current cursor position.
     */
     function backspace() {
-        remove(Math.max(length - 1, 0), length)
+        remove(Math.max(cursorPosition - 1, 0), cursorPosition)
     }
 
     /*!
