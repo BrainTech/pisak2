@@ -9,6 +9,8 @@ ColumnLayout {
 
     property SpellerTextArea textArea: ({})
 
+    property PisakScanningGroup menuGroup: null
+
     property string charSet: "default"
 
     property var charSets: {"default": [["q", "w", "e", "r", "t", "y", "u"],
@@ -52,6 +54,9 @@ ColumnLayout {
             }
 
             Component.onCompleted: {
+                if (index === 0) {
+                    keyboard.__scanningGroups.push(keyboard.menuGroup)
+                }
                 keyboard.__rows.push(row)
                 keyboard.__scanningGroups.push(group)
             }

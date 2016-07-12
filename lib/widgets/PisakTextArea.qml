@@ -1,5 +1,6 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.4
+import ".."
 import "../style"
 
 
@@ -13,6 +14,8 @@ TextArea {
     id:main
 
     wrapMode: TextEdit.Wrap
+    activeFocusOnPress: false
+    font.pixelSize: PisakGlobals.fontPixelSize
 
     property string styleClass: "textArea"
 

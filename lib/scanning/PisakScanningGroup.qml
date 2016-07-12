@@ -37,7 +37,11 @@ Item {
 
     property string __state: ((parentScanningGroup !== null) ? parentScanningGroup.state : "normal") || "normal"
 
-    on__StateChanged: { if (__state !== "active") { state = __state } }
+    on__StateChanged: { if (__state !== "active" && state !== "disabled") { state = __state } }
+
+    property var validElements: new Array(0)
+
+    property int validElementCount: validElements.length
 
     /*!
         \qmlproperty string PisakScanningGroup::soundName
@@ -90,16 +94,20 @@ Item {
 
     PisakSoundEffect {
         id: __sound
-        source: pisak.resources.getSoundPath(soundName)
+        source: soundName ? pisak.resources.getSoundPath(soundName) : ""
     }
 
     onElementsChanged: {
-        if (elements != undefined) {
+        if (elements !== undefined) {
+            var newElements = new Array(0)
             for(var i = 0; i < elements.length; i++) {
-                if (elements[i] == undefined || !elements[i].isScannable) {
-                    // elements.splice(i, 1)
-                } else { elements[i].parentScanningGroup = main }
+                var el = elements[i]
+                if (el !== undefined && el.isScannable) {
+                    newElements.push(el)
+                    el.parentScanningGroup = main
+                }
             }
+            validElements = newElements
         }
     }
 
@@ -124,9 +132,11 @@ Item {
     function onInputEvent() {
         if (running) {
             var currentElement = strategy.getCurrentElement()
-            stopScanning()
-            activeGroupChanged(currentElement)
-            currentElement.select()
+            if (currentElement !== null && currentElement !== undefined) {
+                stopScanning()
+                activeGroupChanged(currentElement)
+                currentElement.select()
+            }
         } else { startScanning() }
     }
 
@@ -134,10 +144,14 @@ Item {
         startScanning()
     }
 
-    function unwind() {
+    function unwind(levels) {
         if (parentScanningGroup !== null) {
-            activeGroupChanged(parentScanningGroup)
-            parentScanningGroup.onSubgroupUnwind()
+            if (levels > 1) {
+                parentScanningGroup.unwind(levels-1)
+            } else {
+                activeGroupChanged(parentScanningGroup)
+                parentScanningGroup.onSubgroupUnwind()
+            }
         }
     }
 

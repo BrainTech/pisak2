@@ -14,6 +14,8 @@ import "../scanning"
     Represents basic GUI element that can by styled easily.
 */
 PisakScanningGroup {
+    id: button
+
     visible: true
 
     signal clicked()
@@ -37,7 +39,11 @@ PisakScanningGroup {
     function select() {
         state = "active"
         clicked()
-        unwind()
+        __afterSelect()
+    }
+
+    function __afterSelect() {
+        unwind(2)
     }
 
     Button {
@@ -49,7 +55,6 @@ PisakScanningGroup {
                 text: control.text
                 color: control.__styleSpec.foreground
                 font.family: control.__styleSpec.fontFamily
-                font.pixelSize: control.__styleSpec.fontPixelSize
             }
             background: PisakRectangle {
                 color: control.__styleSpec.background

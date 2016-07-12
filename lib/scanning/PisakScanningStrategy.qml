@@ -19,7 +19,7 @@ Item {
 
         The default value is \c null.
     */
-    property var group: ({})
+    property var group: null
 
     /*!
         \qmlproperty int PisakScanningStrategy::maxCycleCount
@@ -111,9 +111,9 @@ Item {
     property alias __repeatableTimer: __timer.repeat
 
     property int __cycleIdx: 0
-    property var __currentElement: ({})
+    property var __currentElement: null
     property int __currentElementIdx: -1
-    property var __elements: group.elements
+    property var __elements: group !== null ? group.validElements : []
     property int __elementCount: __elements.length
 
     PisakSoundEffect {
@@ -234,11 +234,12 @@ Item {
         if (__currentElementIdx == __elementCount - 1) {
             if (__cycleIdx == maxCycleCount - 1) {
                 stopCycle()
-                group.unwind()
+                group.unwind(1)
                 return
             } else { __cycleIdx += 1 }
         }
         __currentElementIdx = __getNextElementIdx()
-        return __elements[__currentElementIdx]
+        var nextElement = __elements[__currentElementIdx]
+        return nextElement.state !== "disabled" ? nextElement : __exposeNextElement()
     }
 }
