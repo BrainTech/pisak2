@@ -11,40 +11,62 @@ ColumnLayout {
 
     property PisakScanningGroup menuGroup: null
 
-    property string charSet: "default"
-
-    property var charSets: {"default": [["q", "w", "e", "r", "t", "y", "u"],
-                                        ["i", "o", "p", "a", "s", "d", "f"],
-                                        ["g", "h", "j", "k", "l", "z", "x"],
-                                        [".", " ", "c", "v", "b", "n", "m"]]}
-
-    readonly property int rows: __currentCharSet.length
-
     readonly property PisakScanningGroup mainScanningGroup: __mainScanningGroup
 
-    readonly property var __currentCharSet: charSets[charSet]
+    property var defaultCharSet: [["q", "w", "e", "r", "t", "y", "u"],
+                                    ["i", "o", "p", "a", "s", "d", "f"],
+                                    ["g", "h", "j", "k", "l", "z", "x"],
+                                    [".", " ", "c", "v", "b", "n", "m"]]
+
+    property var __currentCharSet: defaultCharSet
+
+    property var __keyboardModel: null
+
+    readonly property int rows: __currentCharSet.length
 
     property var __scanningGroups: new Array(0)
 
     property var __rows: new Array(0)
 
+    property bool __uppercase: false
+
+    property bool __backToDefaultCharSetOnKeySelected: false
+    property bool __backToDefaultCharSetOnUnwind: false
+
+    PisakScanningGroup {
+        id: __mainScanningGroup
+        unwind: __keyboardUnwind
+
+        onUnwindedFromSubgroup: {
+            if (__backToDefaultCharSetOnKeySelected) {
+                __backToDefaultCharSetOnKeySelected = false
+                setDefaultCharSet()
+            }
+        }
+
+        function __keyboardUnwind(levels) {
+            if (__backToDefaultCharSetOnUnwind) {
+                __backToDefaultCharSetOnUnwind = false
+                setDefaultCharSet()
+                startScanning()
+            } else { __unwind(levels) }
+        }
+    }
+
     Repeater {
-        model: rows
+        model: __keyboardModel
 
         RowLayout {
             id: row
             Layout.alignment: Qt.AlignHCenter
 
-            property int rowIndex: index
-
             Repeater {
-                model: __currentCharSet[rowIndex].length
+                model: modelData
 
                 SpellerKey {
                     id: key
-                    text: keyboard.__currentCharSet[rowIndex][index]
-
-                    onClicked: keyboard.textArea.typeText(text)
+                    text: modelData
+                    onClicked: { keyboard.__selectKey(key) }
                 }
             }
 
@@ -63,28 +85,40 @@ ColumnLayout {
         }
     }
 
-    PisakScanningGroup {
-        id: __mainScanningGroup
-    }
-
     Component.onCompleted: {
         __mainScanningGroup.elements = __scanningGroups
     }
 
-    onCharSetChanged: {
-        // static keyboard layout
-        for(var rowIdx = 0; rowIdx < __rows.length; rowIdx++) {
-            for(var colIdx = 0; colIdx < __rows[rowIdx].length; colIdx++) {
-                if (rowIdx < __currentCharSet.length && colIdx < __currentCharSet[rowIdx].length) {
-                    __rows[rowIdx][colIdx].text = __currentCharSet[rowIdx][colIdx]
-                }
-            }
+    on__CurrentCharSetChanged: {
+        __scanningGroups = new Array(0)
+        __rows = new Array(0)
+        __keyboardModel = __currentCharSet
+        __mainScanningGroup.elements = __scanningGroups
+    }
+
+    function setCharSet(newCharSet) {
+        __uppercase = false
+        if (newCharSet === __currentCharSet) { newCharSet = null }
+        __backToDefaultCharSetOnUnwind = newCharSet !== defaultCharSet
+        __currentCharSet = newCharSet || defaultCharSet
+    }
+
+    function setDefaultCharSet() {
+        setCharSet(defaultCharSet)
+    }
+
+    function setUpperCase() {
+        if (!__uppercase) {
+            setCharSet(__currentCharSet.map(function(row) {
+                return row.map(function(x){ return x.toUpperCase() }) }))
+            __uppercase = true
+        } else {
+            setDefaultCharSet()
         }
     }
 
-    function upperCase() {}
-
-    function lowerCase() {}
-
-    function altGr() {}
+    function __selectKey(key) {
+        textArea.typeText(key.text)
+        if (__currentCharSet !== defaultCharSet) { __backToDefaultCharSetOnKeySelected = true }
+    }
 }

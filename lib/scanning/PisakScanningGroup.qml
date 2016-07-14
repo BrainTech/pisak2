@@ -15,6 +15,8 @@ Item {
 
     signal activeGroupChanged(var group)
 
+    signal unwindedFromSubgroup()
+
     state: "normal"
 
     states: [
@@ -42,6 +44,8 @@ Item {
     property var validElements: new Array(0)
 
     property int validElementCount: validElements.length
+
+    property var unwind: __unwind
 
     /*!
         \qmlproperty string PisakScanningGroup::soundName
@@ -144,7 +148,12 @@ Item {
         startScanning()
     }
 
-    function unwind(levels) {
+    function onSubgroupUnwind() {
+        unwindedFromSubgroup()
+        startScanning()
+    }
+
+    function __unwind(levels) {
         if (parentScanningGroup !== null) {
             if (levels > 1) {
                 parentScanningGroup.unwind(levels-1)
@@ -153,9 +162,5 @@ Item {
                 parentScanningGroup.onSubgroupUnwind()
             }
         }
-    }
-
-    function onSubgroupUnwind() {
-        startScanning()
     }
 }
