@@ -31,20 +31,11 @@ PisakScanningGroup {
     */
     property string styleClass: "button"
 
-    /*!
-        \qmlmethod void PisakButton::select()
+    property int activeBlinkInterval: 200
 
-        Selects the button - emits the \c clicked signal.
-    */
-    function select() {
-        state = "active"
-        clicked()
-        __afterSelect()
-    }
+    function __doSelect() { clicked() }
 
-    function __afterSelect() {
-        unwind(2)
-    }
+    function __afterSelect() { unwind(2) }
 
     Button {
         id: __button
@@ -61,11 +52,33 @@ PisakScanningGroup {
                 radius: control.__styleSpec.radius
                 border.color: control.__styleSpec.border
                 border.width: control.__styleSpec.borderWidth
+
+                SequentialAnimation on color {
+                    id: __animation
+                    loops: Animation.Infinite
+                    running: button.__activeAnimationRunning
+
+                    readonly property var __style: control.__style["active"].feedbackAnimation
+
+                    ColorAnimation {
+                        from: __animation.__style.colorFrom
+                        to: __animation.__style.colorTo
+                        duration: button.activeBlinkInterval / 2
+                    }
+
+                    ColorAnimation {
+                        from: __animation.__style.colorTo
+                        to: __animation.__style.colorFrom
+                        duration: button.activeBlinkInterval / 2
+                    }
+                }
             }
         }
 
-        readonly property var __styleSpec: PisakStyle.skin[parent.styleClass][parent.state]
+        readonly property var __style: PisakStyle.skin[parent.styleClass]
+
+        readonly property var __styleSpec: __style[parent.state]
 
         onClicked: parent.clicked()
-    }
+   }
 }

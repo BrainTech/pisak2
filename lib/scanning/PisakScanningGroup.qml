@@ -37,13 +37,11 @@ Item {
         }
     ]
 
-    property string __state: ((parentScanningGroup !== null) ? parentScanningGroup.state : "normal") || "normal"
-
-    on__StateChanged: { if (__state !== "active" && state !== "disabled") { state = __state } }
-
     property var validElements: new Array(0)
 
     property int validElementCount: validElements.length
+
+    property int activeDuration: 1000
 
     property var unwind: __unwind
 
@@ -96,6 +94,20 @@ Item {
 
     readonly property bool running: strategy.running
 
+    property alias __activeAnimationRunning: __activeAnimation.running
+
+    property string __state: ((parentScanningGroup !== null) ? parentScanningGroup.state : "normal") || "normal"
+
+    PauseAnimation {
+        id: __activeAnimation
+        duration: activeDuration
+        running: state === "active"
+
+        onRunningChanged: {
+            if (!running) { __afterSelect() }
+        }
+    }
+
     PisakSoundEffect {
         id: __sound
         source: soundName ? pisak.resources.getSoundPath(soundName) : ""
@@ -115,6 +127,8 @@ Item {
         }
     }
 
+    on__StateChanged: { if (__state !== "active" && state !== "disabled") { state = __state } }
+
     /*!
         \qmlmethod void PisakScanningSound::playSound()
 
@@ -125,7 +139,6 @@ Item {
     }
 
     function startScanning() {
-        state = "active"
         strategy.startCycle()
     }
 
@@ -145,7 +158,8 @@ Item {
     }
 
     function select() {
-        startScanning()
+        state = "active"
+        __doSelect()
     }
 
     function onSubgroupUnwind() {
@@ -153,12 +167,16 @@ Item {
         startScanning()
     }
 
+    function __afterSelect() { startScanning() }
+
+    function __doSelect() {}
+
     function __unwind(levels) {
         if (parentScanningGroup !== null) {
+            activeGroupChanged(parentScanningGroup)
             if (levels > 1) {
                 parentScanningGroup.unwind(levels-1)
             } else {
-                activeGroupChanged(parentScanningGroup)
                 parentScanningGroup.onSubgroupUnwind()
             }
         }
